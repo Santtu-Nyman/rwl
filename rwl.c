@@ -1,5 +1,5 @@
 /*
-	Raw Wave Library version 1.0.0 2018-09-04 by Santtu Nyman.
+	Raw Wave Library version 1.0.1 2018-09-05 by Santtu Nyman.
 	git repository https://github.com/Santtu-Nyman/rwl
 */
 
