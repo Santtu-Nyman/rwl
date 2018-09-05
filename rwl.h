@@ -1,5 +1,5 @@
 /*
-	Raw Wave Library version 1.0.0 2018-09-04 by Santtu Nyman.
+	Raw Wave Library version 1.0.1 2018-09-05 by Santtu Nyman.
 	git repository https://github.com/Santtu-Nyman/rwl
 	
 	Description
@@ -8,6 +8,8 @@
 		Implementation code is not commented. I may add comments some day.
 		
 	Version history
+		Version 1.0.1 2018-09-05
+			Usage documentation clarified.
 		version 1.0.0 2018-09-04
 			First publicly available version.
 */
@@ -25,18 +27,18 @@ extern "C" {
 int rwl_load_wave_file(const char* file_name, size_t* sample_rate, size_t* sample_count, float* left_channel, float* rigth_channel);
 /*
 	Description
-		Function load wave from raw(not compressed) wave(.wav) file to one or two channels of some signal.
-		If both channel pointer are null function reads sample rate and sample count and does
+		Function loads wave from raw(not compressed) wave(.wav) file to one or two channels of some signal.
+		If both channel pointers are null function reads sample rate and sample count and does
 		not write anything to left or right channel buffers. If only one channel pointer is not null all channels from
-		the file are mixed to one resulting signal that is written to the channel's buffer that has not null pointer.
-		If both channel pointer are not null left channel is written to left channel buffer and right channel is written to right channel buffer.
+		the file are mixed to one resulting signal that is written to the channel's buffer that has non null pointer.
+		If both channel pointer are non null left channel is written to left channel's buffer and right channel is written to right channel's buffer.
 	Parameters
 		file_name
 			Pointer to name of the wave file.
 		sample_rate
 			Pointer variable that receives file's sample rate.
 		sample_count
-			Pointer to variable that specifies length in samples of channel buffers.
+			Pointer to variable that specifies length of channel buffers in samples.
 			Function overwrites value of this variable with file's per channel sample count.
 		left_channel
 			Pointer to left channel's buffer.
