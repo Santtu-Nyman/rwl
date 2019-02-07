@@ -1,13 +1,14 @@
 /*
-	Raw Wave Library version 1.0.1 2018-09-05 by Santtu Nyman.
+	Raw Wave Library version 1.0.2 2019-02-07 by Santtu Nyman.
 	git repository https://github.com/Santtu-Nyman/rwl
 	
 	Description
 		Cross-Platform library for reading and writing raw wave files.
 		Usage documentation is written to the rwl header after function declarations.
-		Implementation code is not commented. I may add comments some day.
 		
 	Version history
+		Version 1.0.2 2019-02-07
+			Removed useless macro on non Windows platforms.
 		Version 1.0.1 2018-09-05
 			Usage documentation clarified.
 		version 1.0.0 2018-09-04

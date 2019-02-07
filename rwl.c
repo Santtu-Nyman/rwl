@@ -1,5 +1,5 @@
 /*
-	Raw Wave Library version 1.0.1 2018-09-05 by Santtu Nyman.
+	Raw Wave Library version 1.0.2 2019-02-07 by Santtu Nyman.
 	git repository https://github.com/Santtu-Nyman/rwl
 */
 
@@ -7,7 +7,10 @@
 extern "C" {
 #endif
 
+#ifdef _WIN32
 #define _CRT_SECURE_NO_WARNINGS
+#endif
+
 #include "rwl.h"
 #include <stdlib.h>
 #include <string.h>
@@ -25,21 +28,21 @@ typedef struct rwl_riff_chunk
 	void* sub_chunks;
 } rwl_riff_chunk;
 
-int rwl_load_file(const char* file_name, size_t* file_size, void** file_data);
+static int rwl_load_file(const char* file_name, size_t* file_size, void** file_data);
 
-int rwl_store_file(const char* file_name, size_t file_size, const void* file_data);
+static int rwl_store_file(const char* file_name, size_t file_size, const void* file_data);
 
-int rwl_create_riff_tree(size_t size, const void* data, rwl_riff_chunk** root);
+static int rwl_create_riff_tree(size_t size, const void* data, rwl_riff_chunk** root);
 
-rwl_riff_chunk* rwl_get_riff_chunk(rwl_riff_chunk* chunk, const char* chunk_path);
+static rwl_riff_chunk* rwl_get_riff_chunk(rwl_riff_chunk* chunk, const char* chunk_path);
 
-int rwl_get_audio_format(rwl_riff_chunk* chunk, int* sample_type, size_t* sample_size, size_t* channel_count, uint32_t* channel_mask, size_t* sample_rate, size_t* sample_count);
+static int rwl_get_audio_format(rwl_riff_chunk* chunk, int* sample_type, size_t* sample_size, size_t* channel_count, uint32_t* channel_mask, size_t* sample_rate, size_t* sample_count);
 
-float rwl_get_signal_absolute_peak(size_t sample_count, const float* signal);
+static float rwl_get_signal_absolute_peak(size_t sample_count, const float* signal);
 
-void rwl_scale_signal(size_t sample_count, float* signal, float multiplier);
+static void rwl_scale_signal(size_t sample_count, float* signal, float multiplier);
 
-int rwl_load_file(const char* file_name, size_t* file_size, void** file_data)
+static int rwl_load_file(const char* file_name, size_t* file_size, void** file_data)
 {
 	int error;
 	FILE* file = fopen(file_name, "rb");
@@ -98,12 +101,12 @@ int rwl_load_file(const char* file_name, size_t* file_size, void** file_data)
 	return 0;
 }
 
-int rwl_store_file(const char* file_name, size_t file_size, const void* file_data)
+static int rwl_store_file(const char* file_name, size_t file_size, const void* file_data)
 {
 	int error;
 	size_t file_name_length = strlen(file_name);
 	size_t temporal_file_name_length = file_name_length + 28;
-	char* temporal_file_name = (char*)malloc(temporal_file_name_length);
+	char* temporal_file_name = (char*)malloc(temporal_file_name_length * sizeof(char));
 	if (!temporal_file_name)
 	{
 		error = ENOMEM;
@@ -209,7 +212,7 @@ int rwl_store_file(const char* file_name, size_t file_size, const void* file_dat
 	return 0;
 }
 
-int rwl_create_riff_tree(size_t size, const void* data, rwl_riff_chunk** root)
+static int rwl_create_riff_tree(size_t size, const void* data, rwl_riff_chunk** root)
 {
 	if (size < 8)
 		return ENOBUFS;
@@ -289,7 +292,7 @@ int rwl_create_riff_tree(size_t size, const void* data, rwl_riff_chunk** root)
 	return 0;
 }
 
-rwl_riff_chunk* rwl_get_riff_chunk(rwl_riff_chunk* chunk, const char* chunk_path)
+static rwl_riff_chunk* rwl_get_riff_chunk(rwl_riff_chunk* chunk, const char* chunk_path)
 {
 	if (!*chunk_path)
 		return 0;
@@ -310,7 +313,7 @@ rwl_riff_chunk* rwl_get_riff_chunk(rwl_riff_chunk* chunk, const char* chunk_path
 	}
 }
 
-int rwl_get_audio_format(rwl_riff_chunk* chunk, int* sample_type, size_t* sample_size, size_t* channel_count, uint32_t* channel_mask, size_t* sample_rate, size_t* sample_count)
+static int rwl_get_audio_format(rwl_riff_chunk* chunk, int* sample_type, size_t* sample_size, size_t* channel_count, uint32_t* channel_mask, size_t* sample_rate, size_t* sample_count)
 {
 	chunk = rwl_get_riff_chunk(chunk, "RIFF");
 	if (!chunk || *(const char*)((uintptr_t)chunk->data) != 'W' || *(const char*)((uintptr_t)chunk->data + 1) != 'A' || *(const char*)((uintptr_t)chunk->data + 2) != 'V' || *(const char*)((uintptr_t)chunk->data + 3) != 'E')
@@ -385,7 +388,7 @@ int rwl_get_audio_format(rwl_riff_chunk* chunk, int* sample_type, size_t* sample
 	return 0;
 }
 
-float rwl_get_signal_absolute_peak(size_t sample_count, const float* signal)
+static float rwl_get_signal_absolute_peak(size_t sample_count, const float* signal)
 {
 	float peak = 0.0f;
 	for (const float* signal_end = signal + sample_count; signal != signal_end; ++signal)
@@ -398,7 +401,7 @@ float rwl_get_signal_absolute_peak(size_t sample_count, const float* signal)
 	return peak;
 }
 
-void rwl_scale_signal(size_t sample_count, float* signal, float multiplier)
+static void rwl_scale_signal(size_t sample_count, float* signal, float multiplier)
 {
 	for (float* signal_end = signal + sample_count; signal != signal_end; ++signal)
 		*signal *= multiplier;
@@ -436,7 +439,7 @@ int rwl_load_wave_file(const char* file_name, size_t* sample_rate, size_t* sampl
 		error = ENOTSUP;
 		return error;
 	}
-	size_t channel_count = (left_channel != 0 ? 1 : 0) + (rigth_channel != 0 ? 1 : 0);
+	size_t channel_count = (left_channel ? (size_t)1 : (size_t)0) + (rigth_channel ? (size_t)1 : (size_t)0);
 	if (!channel_count)
 	{
 		free(file_data);
